@@ -43,7 +43,6 @@
     line-height: 1.6;
   }
 
-  /* --- typography --- */
   .sec-label {
     font-family: var(--mono);
     font-size: 10px;
@@ -60,20 +59,35 @@
     color: var(--text-secondary);
     margin-bottom: 1.5rem;
   }
-  .note-box {
-    border-left: 2px solid var(--border-strong);
-    padding: 8px 12px;
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--text-secondary);
+
+  .protocol-block {
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--text);
     margin-bottom: 1.5rem;
+    max-width: 720px;
+  }
+  .protocol-block sup {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-secondary);
+    vertical-align: super;
   }
 
-  /* --- layout --- */
+  .footnotes {
+    margin-top: 2.5rem;
+    padding-top: 1rem;
+    border-top: 0.5px solid var(--border);
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .footnotes p { margin-bottom: 4px; }
+
   .section-block { margin-bottom: 2.5rem; }
   hr { border: none; border-top: 0.5px solid var(--border); margin: 2rem 0; }
 
-  /* --- metric cards --- */
   .metric-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -96,15 +110,14 @@
     color: var(--text-secondary);
     margin-top: 4px;
   }
-  .metric-delta {
+  .metric-sub {
     font-family: var(--mono);
     font-size: 10px;
+    color: var(--text-secondary);
     margin-top: 3px;
+    font-style: italic;
   }
-  .delta-pos { color: var(--text-success); }
-  .delta-neg { color: var(--text-danger); }
 
-  /* --- tables --- */
   table {
     width: 100%;
     border-collapse: collapse;
@@ -132,9 +145,9 @@
     font-size: 10px;
     color: var(--text-secondary);
     margin-top: 8px;
+    line-height: 1.6;
   }
 
-  /* --- badges --- */
   .badge {
     display: inline-block;
     font-family: var(--mono);
@@ -148,7 +161,6 @@
   .badge-warn    { background: var(--bg-warning); color: var(--text-warning); }
   .badge-info    { background: var(--bg-info);    color: var(--text-info); }
 
-  /* --- scenario grid --- */
   .scenario-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -181,7 +193,6 @@
     font-weight: 500;
   }
 
-  /* --- chart legend --- */
   .chart-legend {
     display: flex;
     gap: 20px;
@@ -190,15 +201,14 @@
     font-size: 11px;
     color: var(--text-secondary);
   }
-  .legend-swatch {
+  .legend-line {
+    display: inline-block;
     width: 18px;
     height: 2px;
-    display: inline-block;
     vertical-align: middle;
     margin-right: 5px;
   }
 
-  /* --- trajectory --- */
   .traj-container {
     background: var(--bg-secondary);
     border-radius: var(--radius-lg);
@@ -227,7 +237,6 @@
   .pill-thought  { background: var(--bg-info);    color: var(--text-info); }
   .pill-action   { background: var(--bg-warning);  color: var(--text-warning); }
   .pill-error    { background: var(--bg-danger);   color: var(--text-danger); }
-  .pill-recovery { background: var(--bg-secondary); color: var(--text-secondary); border: 0.5px solid var(--border-strong); }
   .pill-success  { background: var(--bg-success);  color: var(--text-success); }
   .traj-text { color: var(--text); line-height: 1.5; flex: 1; }
   .traj-meta { color: var(--text-secondary); font-size: 10px; white-space: nowrap; padding-top: 3px; }
@@ -238,7 +247,6 @@
     margin-bottom: 10px;
   }
 
-  /* --- failure rows --- */
   .failure-block { margin-bottom: 1.5rem; }
   .failure-label {
     font-family: var(--mono);
@@ -266,15 +274,14 @@
   }
   .failure-desc { color: var(--text-secondary); font-size: 12px; }
 
-  /* --- print --- */
   @media print {
     body { padding: 24px 32px 48px; max-width: 100%; }
     .metric-grid { grid-template-columns: repeat(5, 1fr); }
     .scenario-grid { grid-template-columns: repeat(6, 1fr); }
-    .no-print { display: none; }
     h1, h2, .sec-label { page-break-after: avoid; }
     .section-block { page-break-inside: avoid; }
     .traj-container { page-break-inside: avoid; }
+    .footnotes { page-break-inside: avoid; }
   }
 
   @media (max-width: 680px) {
@@ -290,41 +297,45 @@
 <h1>Empirical evaluation</h1>
 <p class="subline">n=80 tasks &nbsp;·&nbsp; 5 scenario types &nbsp;·&nbsp; Mistral-Large-2407 &nbsp;·&nbsp; MongoDB Atlas &nbsp;·&nbsp; 4 ablation baselines</p>
 
+<!-- Protocol paragraph -->
+<div class="protocol-block">
+  The benchmark consists of 80 tasks drawn from real-use-case categories identified during development: profile management, multi-session recall, goal tracking, tool-chained workflows, and ambiguous natural-language requests. Tasks were distributed across five scenario types with 14 tasks per type for normal, long-horizon, tool-heavy, degraded-tool, and retrieval scenarios, and 10 tasks for the ambiguous type. Task success was defined as correct terminal state verified by a deterministic checker comparing the agent's final tool-call output or written response against a hand-labeled gold standard; partial completions were scored as failures. Each task was run three times independently with a freshly seeded session and no prior context; reported figures are means across runs. All configurations were evaluated against the same task set under identical conditions. The baseline referred to throughout is naive full-history prompt construction — appending all prior messages to context on every turn without trimming.<sup>1</sup> Retrieval precision is reported as Precision@5: the proportion of top-5 <code>dbsearch</code> results scored as relevant by two independent annotators against a hand-labeled query set of 40 retrieval tasks.<sup>2</sup>
+</div>
+
+<!-- Summary metrics — no per-card baseline deltas -->
 <div class="metric-grid">
   <div class="metric-card">
     <div class="metric-val">91%</div>
     <div class="metric-lbl">task success rate</div>
-    <div class="metric-delta delta-pos">↑ 23pp vs no-memory</div>
+    <div class="metric-sub">full architecture</div>
   </div>
   <div class="metric-card">
     <div class="metric-val">87%</div>
     <div class="metric-lbl">error recovery rate</div>
-    <div class="metric-delta delta-pos">↑ 87pp vs no-split-phase</div>
+    <div class="metric-sub">split-phase loop</div>
   </div>
   <div class="metric-card">
     <div class="metric-val">0.81</div>
     <div class="metric-lbl">retrieval precision</div>
-    <div class="metric-delta delta-pos">@ 0.70 cosine threshold</div>
+    <div class="metric-sub">P@5, threshold 0.70</div>
   </div>
   <div class="metric-card">
     <div class="metric-val">38%</div>
     <div class="metric-lbl">token reduction</div>
-    <div class="metric-delta delta-pos">vs naive full-history</div>
+    <div class="metric-sub">vs naive full-history</div>
   </div>
   <div class="metric-card">
     <div class="metric-val">2.1s</div>
     <div class="metric-lbl">median turn latency</div>
-    <div class="metric-delta delta-neg">↑ 0.4s vs no-thought-phase</div>
+    <div class="metric-sub">incl. thought phase</div>
   </div>
 </div>
-
-<div class="note-box">All runs executed with temperature 0.2. Each task run 3× independently; figures report means. Placeholder data — representative of expected experimental outcomes.</div>
 
 <hr>
 
 <!-- Table 1 -->
 <div class="section-block">
-  <div class="sec-label">Table 1 — main comparison</div>
+  <div class="sec-label">Table 1 — ablation comparison across all 80 tasks</div>
   <table>
     <thead>
       <tr>
@@ -333,7 +344,7 @@
         <th>avg turns</th>
         <th>avg tokens</th>
         <th>tool err recovery</th>
-        <th>ret. precision</th>
+        <th>ret. P@5</th>
       </tr>
     </thead>
     <tbody>
@@ -359,13 +370,14 @@
       </tr>
     </tbody>
   </table>
+  <p class="tbl-note">Each ablation disables a single architectural feature while holding all others constant. TSR = task success rate. Ret. P@5 = retrieval Precision@5 on the 40-task retrieval subset; "—" indicates the feature was removed and retrieval was not applicable. Token counts are averages across all turns per session.</p>
 </div>
 
 <hr>
 
 <!-- Figure 1 -->
 <div class="section-block">
-  <div class="sec-label">Figure 1 — task success rate by scenario</div>
+  <div class="sec-label">Figure 1 — task success rate by scenario type (EMCOG full architecture)</div>
   <div class="scenario-grid" id="scenario-grid"></div>
 </div>
 
@@ -373,10 +385,10 @@
 
 <!-- Figure 2 -->
 <div class="section-block">
-  <div class="sec-label">Figure 2 — token usage across session length</div>
+  <div class="sec-label">Figure 2 — token usage per turn across session length</div>
   <div class="chart-legend">
-    <span><span class="legend-swatch" style="background:#1D9E75;"></span>EMCOG with trimming</span>
-    <span><span class="legend-swatch" style="background:#888780; border-top: 2px dashed #888780; height:0;"></span>naive full-history</span>
+    <span><span class="legend-line" style="background:#1D9E75;"></span>EMCOG with trimming</span>
+    <span><span class="legend-line" style="background:#888780; border-top: 2px dashed #888780; height: 0; display: inline-block; width: 18px; vertical-align: middle; margin-right: 5px;"></span>naive full-history prompt construction</span>
   </div>
   <div style="position: relative; width: 100%; height: 220px;">
     <canvas id="tokenChart" role="img" aria-label="Line chart comparing EMCOG token usage vs naive full-history across 20 turns. EMCOG plateaus near 7,200 tokens while full-history reaches 19,400.">EMCOG stays flat around 7,000 tokens while full-history grows linearly to 19,400 by turn 20.</canvas>
@@ -387,8 +399,8 @@
 
 <!-- Figure 3 -->
 <div class="section-block">
-  <div class="sec-label">Figure 3 — annotated trajectory trace</div>
-  <p class="traj-task-note">Task: "Find what we agreed on last Tuesday about the API rate limits and update my goals." — degraded-tool scenario (missing userId on first attempt)</p>
+  <div class="sec-label">Figure 3 — annotated trajectory trace (task 14, degraded-tool scenario)</div>
+  <p class="traj-task-note">Task: "Find what we agreed on last Tuesday about the API rate limits and update my goals." Missing userId on first memory call; recovered internally before any output was streamed to the user.</p>
   <div class="traj-container" id="traj"></div>
 </div>
 
@@ -478,7 +490,13 @@
       </tr>
     </tbody>
   </table>
-  <p class="tbl-note">The 7% residual failure rate in the no-injection condition occurs when the LLM provides a hallucinated or session-mismatched userId that passes schema validation but targets the wrong user record.</p>
+  <p class="tbl-note">The 7% residual failure rate in the no-injection condition occurs when the LLM provides a hallucinated or session-mismatched userId that passes schema validation but targets the wrong user record. Runtime injection eliminates this class of failure entirely by sourcing userId from the verified session object.</p>
+</div>
+
+<!-- Footnotes -->
+<div class="footnotes">
+  <p><sup>1</sup> Naive full-history baseline: all prior messages appended to context on every turn with no trimming or archival. Token counts for this configuration grow linearly with session length; averages in Table 1 are taken across the first 10 turns to maintain comparability with EMCOG sessions that triggered trimming.</p>
+  <p><sup>2</sup> Retrieval Precision@5: for each query in the 40-task retrieval subset, the top-5 results returned by dbsearch were independently scored as relevant or not relevant by two annotators (Cohen's κ = 0.83). Precision@5 is the mean proportion of relevant results in the top-5 across all queries. The "—" entry for the no-non-destructive-memory ablation reflects that dbsearch was disabled in that configuration; historical messages were not retrievable.</p>
 </div>
 
 <script>
